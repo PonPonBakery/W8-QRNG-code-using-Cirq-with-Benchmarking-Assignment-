@@ -1,0 +1,35 @@
+!pip install cirq
+import cirq 
+import time
+start_time = time.time()
+
+#pick a qubit
+#cirq organizes qubits on a 2d grid for physical layout convenience 
+#here GridQubit(0,0) means we're selecting the qubit located
+#at row 0, column 0 in that grid
+qubit = cirq.GridQubit(0,0) 
+
+#create a quantum circuit using cirq
+#a circuit is a sequence of quantum operations (gates)
+#that are applied to one or more qubits in order
+circuit = cirq.Circuit(
+cirq.X(qubit)**0.5,
+cirq.measure(qubit, key ='m') 
+)
+print("Circuit: ")
+print(circuit)
+
+simulator = cirq.Simulator()
+result = simulator.run(circuit, repetitions = 30)
+print("Results: ")
+print(result)
+
+m = result.measurements['m']
+if(m.ndim == 2 and m.shape[1] == 1):
+  decimal_result = 0
+  for i, bit in enumerate(m.flatten(),1):
+    decimal_result += int(bit) * (2 ** (len(m.flatten())-i))
+  print("Decimal Result: ", decimal_result)
+  end_time = time.time()
+  elapsed_time = end_time - start_time
+  print(f"Elapsed time: {elapsed_time:.4f} seconds");
